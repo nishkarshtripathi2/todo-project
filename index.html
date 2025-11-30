@@ -1,0 +1,28 @@
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Todo List</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="box">
+        <h2>Todo List</h2>
+
+        <input type="text" id="myInput" placeholder="Write task here...">
+
+        <button id="addBtn" onclick="newElement()">Add Todo</button>
+
+        <ul id="myUL">
+            <li onclick="toggleCheck(this)">Go and Check Contact List <span class="close" onclick="removeItem(event)">×</span></li>
+            <li onclick="toggleCheck(this)">Learn Data Structure <span class="close" onclick="removeItem(event)">×</span></li>
+            <li onclick="toggleCheck(this)">Prepare Interview Questions <span class="close" onclick="removeItem(event)">×</span></li>
+        </ul>
+
+        <button id="clearAll" onclick="removeAll()">Clear All</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
