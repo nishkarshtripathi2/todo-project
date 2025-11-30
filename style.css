@@ -1,0 +1,74 @@
+body {
+    font-family: Arial;
+    padding: 30px;
+    background: #f5f5f5;
+}
+
+.box {
+    width: 400px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 8px #ccc;
+}
+
+h2 {
+    text-align: center;
+}
+
+#myInput {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    border: 1px solid #aaa;
+}
+
+#addBtn {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    background: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+ul {
+    list-style: none;
+    padding-left: 0px;
+    margin-top: 20px;
+}
+
+ul li {
+    background: #eee;
+    padding: 10px;
+    margin-top: 7px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+ul li.checked {
+    text-decoration: line-through;
+    background: #d3d3d3;
+}
+
+.close {
+    color: red;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#clearAll {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px;
+    background: red;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
