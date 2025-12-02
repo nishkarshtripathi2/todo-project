@@ -1,39 +1,61 @@
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>Advanced Todo App</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="utf-8" />
+  <title>Pro Todo — Nishkarsh</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <div class="page">
+    <header class="topbar">
+      <h1>🧩 Pro Todo</h1>
+      <div class="top-actions">
+        <input id="searchBox" placeholder="Search tasks..." />
+        <button id="darkToggle" title="Toggle dark mode">🌙</button>
+      </div>
+    </header>
 
-    <div class="container">
-        <h1 class="title">📝 Advanced Todo List</h1>
-
-        <div class="inputBox">
-            <input type="text" id="myInput" placeholder="Write your task..." autocomplete="off">
-            <button class="addBtn" onclick="newElement()">+</button>
+    <main class="card">
+      <section class="input-row">
+        <div class="input-wrap">
+          <input id="myInput" placeholder="Add a new task..." autocomplete="off" />
+          <select id="prioSelect">
+            <option value="low">Low ⚪</option>
+            <option value="medium">Medium 🟠</option>
+            <option value="high">High 🔴</option>
+          </select>
         </div>
-
         <div class="controls">
-            <button onclick="clearDone()">✔ Clear Completed</button>
-            <button onclick="removeAll()">🗑 Clear All</button>
+          <button class="primary" id="addBtn">Add</button>
+          <button id="clearDone">Clear Done</button>
+          <button id="clearAll">Clear All</button>
         </div>
 
-        <div class="filters">
+        <div class="meta-row">
+          <div class="progress-wrap">
+            <div id="progressBar" class="progress">
+              <div id="progressFill" class="progress-fill" style="width:0%"></div>
+            </div>
+            <div class="counts"><span id="doneCount">0</span>/<span id="totalCount">0</span> done</div>
+          </div>
+
+          <div class="extra-actions">
             <button onclick="filter('all')">All</button>
             <button onclick="filter('pending')">Pending</button>
             <button onclick="filter('completed')">Completed</button>
-
-            <select id="prioSelect">
-                <option value="low">Priority: Low</option>
-                <option value="medium">Priority: Medium</option>
-                <option value="high">Priority: High</option>
-            </select>
+          </div>
         </div>
+      </section>
 
-        <ul id="myUL"></ul>
-    </div>
+      <section>
+        <ul id="myUL" class="todo-list" aria-live="polite"></ul>
+      </section>
+
+      <footer class="help">
+        <small>Drag to reorder • Double-click to edit • Click item to toggle done • × to delete</small>
+      </footer>
+    </main>
+  </div>
 
 <script src="script.js"></script>
 </body>
