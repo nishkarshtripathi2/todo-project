@@ -1,133 +1,123 @@
-/* Background */
-body {
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(135deg, #84fab0, #8fd3f4);
-    font-family: Poppins, Arial;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+:root{
+  --bg1: linear-gradient(135deg,#84fab0,#8fd3f4);
+  --glass: rgba(255,255,255,0.18);
+  --muted: #6b7280;
+  --accent:#0077ff;
+  --success:#4caf50;
+  --danger:#e53935;
+  --card-bg: rgba(255,255,255,0.9);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:Inter, system-ui, Arial;
+  background:var(--bg1);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:28px;
+  -webkit-font-smoothing:antialiased;
+  transition:background .3s;
 }
 
-/* Glass Effect Box */
-.container {
-    width: 450px;
-    backdrop-filter: blur(12px);
-    background: rgba(255,255,255,0.25);
-    padding: 30px;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+/* dark mode */
+body.dark{
+  --bg1: linear-gradient(135deg,#0f1724,#001f2e);
+  --glass: rgba(20,20,24,0.36);
+  --card-bg: rgba(10,10,12,0.85);
+  color:#e6edf3;
 }
 
-.title {
-    text-align: center;
-    color: #fff;
-    margin-bottom: 20px;
-    font-weight: 700;
+.page{width:100%;max-width:860px}
+
+/* top bar */
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
+}
+.topbar h1{
+  margin:0;
+  font-size:20px;
+  color:#0b1220;
+}
+body.dark .topbar h1{color:#eaf6ff}
+
+.top-actions{display:flex;gap:10px;align-items:center}
+#searchBox{
+  padding:8px 12px;border-radius:10px;border:1px solid rgba(10,10,10,0.06);width:220px;
+  outline:none;background:rgba(255,255,255,0.9)
+}
+body.dark #searchBox{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);color:#e6edf3}
+
+/* card */
+.card{
+  background:var(--glass);
+  padding:20px;
+  border-radius:16px;
+  backdrop-filter: blur(10px) saturate(120%);
+  box-shadow:0 10px 30px rgba(2,6,23,0.18);
+  border:1px solid rgba(255,255,255,0.12);
 }
 
-/* Input Box */
-.inputBox {
-    display: flex;
-    background: rgba(255,255,255,0.8);
-    padding: 5px;
-    border-radius: 10px;
+/* input area */
+.input-row{display:flex;flex-direction:column;gap:12px}
+.input-wrap{display:flex;gap:10px;align-items:center}
+#myInput{
+  flex:1;padding:12px;border-radius:10px;border:none;background:var(--card-bg);outline:none;font-size:15px;
+  box-shadow:inset 0 1px 0 rgba(0,0,0,0.03);
 }
+body.dark #myInput{background:rgba(255,255,255,0.03);color:#e6edf3}
+#prioSelect{padding:10px;border-radius:10px;border:none;background:var(--card-bg)}
 
-#myInput {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    background: transparent;
-    font-size: 16px;
-    outline: none;
+/* buttons */
+.controls{display:flex;gap:8px;align-items:center}
+button{cursor:pointer;border-radius:10px;padding:8px 12px;border:none;background:rgba(255,255,255,0.12);color:inherit}
+button.primary{background:var(--accent);color:white;box-shadow:0 6px 18px rgba(0,119,255,0.18)}
+button:hover{transform:translateY(-2px)}
+body.dark button{background:rgba(255,255,255,0.04)}
+
+/* meta row */
+.meta-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.progress{height:10px;width:320px;background:rgba(255,255,255,0.12);border-radius:999px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,#6ce1b6,#00b0ff);width:0%;transition:width .4s ease}
+.counts{font-size:13px;color:var(--muted)}
+.extra-actions button{background:rgba(255,255,255,0.06)}
+
+/* list */
+.todo-list{list-style:none;padding:0;margin:18px 0 6px 0;max-height:420px;overflow:auto;display:block}
+.todo-list li{
+  display:flex;align-items:center;gap:12px;justify-content:space-between;
+  padding:12px;border-radius:12px;background:var(--card-bg);margin-bottom:10px;
+  box-shadow:0 6px 18px rgba(3,10,30,0.06);transition:transform .12s ease,box-shadow .12s;
+  cursor:grab;
 }
+.todo-list li:active{cursor:grabbing}
+.todo-list li.dragging{opacity:.6;transform:scale(.99)}
+.todo-list li:hover{transform:translateY(-3px)}
+.todo-list li .left{display:flex;align-items:center;gap:12px;flex:1}
+.todo-list li .txt{font-size:15px}
+.todo-list li .ts{font-size:12px;color:var(--muted)}
+.todo-list li .right{display:flex;align-items:center;gap:8px}
+.close{color:var(--danger);font-weight:700;padding:0 8px;cursor:pointer}
 
-.addBtn {
-    width: 50px;
-    height: 50px;
-    font-size: 28px;
-    color: white;
-    border: none;
-    background: #0077ff;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: 0.2s;
+/* priorities */
+.high{border-left:6px solid var(--danger);padding-left:10px}
+.medium{border-left:6px solid #ff9800;padding-left:10px}
+.low{border-left:6px solid var(--success);padding-left:10px}
+
+/* checked */
+.todo-list li.checked{opacity:.65;text-decoration:line-through;filter:grayscale(.05)}
+
+/* small footer help */
+.help{margin-top:8px;color:var(--muted);font-size:12px;text-align:center}
+
+/* responsive */
+@media(max-width:620px){
+  .card{padding:16px}
+  .progress{width:180px}
+  #searchBox{width:120px}
+  .topbar h1{font-size:18px}
 }
-
-.addBtn:hover {
-    transform: scale(1.1);
-}
-
-/* Buttons */
-.controls, .filters {
-    margin-top: 15px;
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-}
-
-button, select {
-    padding: 10px 15px;
-    border: none;
-    background: #ffffff65;
-    color: #fff;
-    font-weight: 600;
-    border-radius: 10px;
-    cursor: pointer;
-    backdrop-filter: blur(4px);
-    transition: 0.2s;
-}
-
-button:hover, select:hover {
-    background: #ffffff99;
-}
-
-/* Todo List */
-ul {
-    list-style: none;
-    padding: 0;
-    margin-top: 20px;
-}
-
-ul li {
-    background: rgba(255,255,255,0.85);
-    padding: 15px;
-    margin-bottom: 12px;
-    border-radius: 14px;
-    font-size: 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
-    transition: 0.2s;
-}
-
-ul li:hover {
-    transform: scale(1.02);
-}
-
-ul li.checked {
-    text-decoration: line-through;
-    opacity: 0.6;
-}
-
-/* Timestamp */
-.ts {
-    font-size: 11px;
-    color: #555;
-    margin-left: 12px;
-}
-
-/* Delete button */
-.close {
-    font-size: 20px;
-    color: red;
-    cursor: pointer;
-}
-
-/* Priority colors */
-.high { border-left: 7px solid #e53935; }
-.medium { border-left: 7px solid #ff9800; }
-.low { border-left: 7px solid #4caf50; }
