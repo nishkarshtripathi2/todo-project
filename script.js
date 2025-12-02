@@ -1,114 +1,218 @@
-// Load saved todos on page load
-window.addEventListener("DOMContentLoaded", loadTodos);
+// Pro Todo — features: drag-drop, localStorage, dark mode, search, progress
 
-let priority = "low";
-document.getElementById("prioSelect").addEventListener("change", e => {
-    priority = e.target.value;
-});
+// constants / elements
+const ul = document.getElementById('myUL');
+const input = document.getElementById('myInput');
+const prioSel = document.getElementById('prioSelect');
+const addBtn = document.getElementById('addBtn');
+const searchBox = document.getElementById('searchBox');
+const darkToggle = document.getElementById('darkToggle');
+const progressFill = document.getElementById('progressFill');
+const doneCount = document.getElementById('doneCount');
+const totalCount = document.getElementById('totalCount');
 
-// Creates a new todo item
-function newElement() {
-    const input = document.getElementById("myInput");
-    const text = input.value.trim();
-    if (!text) return alert("Please enter something!");
+let todos = []; // array of {id,text,checked,priority,time}
+let dragSrcId = null;
 
-    const li = createTodoItem(text, false, priority, new Date().toLocaleString());
-    document.getElementById("myUL").appendChild(li);
+// init
+loadTheme();
+loadTodos();
+bindEvents();
 
-    input.value = "";
-    saveTodos();
+// utilities
+function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,6) }
+
+function saveTodos(){
+  localStorage.setItem('pro_todos_v1', JSON.stringify(todos));
+  render();
 }
 
-function createTodoItem(text, checked = false, priority = "low", time = "") {
-    const li = document.createElement("li");
-    if (checked) li.classList.add("checked");
-    li.classList.add(priority);
-
-    // text span
-    const t = document.createElement("span");
-    t.textContent = text;
-
-    // timestamp
-    const ts = document.createElement("span");
-    ts.className = "ts";
-    ts.textContent = time;
-
-    // delete button
-    const del = document.createElement("span");
-    del.className = "close";
-    del.textContent = "×";
-    del.onclick = e => {
-        e.stopPropagation();
-        li.remove();
-        saveTodos();
-    };
-
-    // toggle completed
-    li.onclick = e => {
-        if (e.target === del) return;
-        li.classList.toggle("checked");
-        saveTodos();
-    };
-
-    // double click edit
-    li.ondblclick = e => {
-        const newText = prompt("Edit task:", t.textContent);
-        if (newText !== null) {
-            t.textContent = newText.trim();
-            saveTodos();
-        }
-    };
-
-    li.appendChild(t);
-    li.appendChild(ts);
-    li.appendChild(del);
-    return li;
+function loadTodos(){
+  const raw = localStorage.getItem('pro_todos_v1');
+  todos = raw ? JSON.parse(raw) : [];
+  render();
 }
 
-// Remove all items
-function removeAll() {
-    if (!confirm("Clear all tasks?")) return;
-    document.getElementById("myUL").innerHTML = "";
-    saveTodos();
+// create DOM li from item
+function createLi(item){
+  const li = document.createElement('li');
+  li.setAttribute('draggable','true');
+  li.dataset.id = item.id;
+  li.className = item.priority + (item.checked ? ' checked' : '');
+  // left part
+  const left = document.createElement('div'); left.className='left';
+  const txt = document.createElement('div'); txt.className='txt'; txt.textContent = item.text;
+  const ts = document.createElement('div'); ts.className='ts'; ts.textContent = item.time;
+  left.appendChild(txt); left.appendChild(ts);
+  // right part
+  const right = document.createElement('div'); right.className='right';
+  const close = document.createElement('div'); close.className='close'; close.textContent='×';
+  right.appendChild(close);
+  // assemble
+  li.appendChild(left); li.appendChild(right);
+
+  // events
+  li.addEventListener('click', (e)=>{
+    if(e.target === close) return; // deletion handled separately
+    toggleChecked(item.id);
+  });
+
+  close.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    removeTodo(item.id);
+  });
+
+  li.addEventListener('dblclick', (e)=>{
+    e.stopPropagation();
+    const newText = prompt('Edit task:', item.text);
+    if(newText !== null){
+      updateTodoText(item.id, newText.trim());
+    }
+  });
+
+  // drag events
+  li.addEventListener('dragstart', (e)=>{
+    dragSrcId = item.id;
+    li.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+  li.addEventListener('dragend', ()=>{
+    dragSrcId = null;
+    li.classList.remove('dragging');
+  });
+
+  li.addEventListener('dragover',(e)=>{
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  });
+
+  li.addEventListener('drop',(e)=>{
+    e.preventDefault();
+    const targetId = li.dataset.id;
+    if(!dragSrcId || dragSrcId === targetId) return;
+    reorder(dragSrcId, targetId);
+  });
+
+  return li;
 }
 
-// Remove completed tasks only
-function clearDone() {
-    document.querySelectorAll("li.checked").forEach(li => li.remove());
-    saveTodos();
+// render UI
+function render(){
+  // clear and append in todos order
+  ul.innerHTML = '';
+  todos.forEach(item => ul.appendChild(createLi(item)));
+
+  // update progress
+  const total = todos.length;
+  const done = todos.filter(t=>t.checked).length;
+  const pct = total ? Math.round((done/total)*100) : 0;
+  progressFill.style.width = pct + '%';
+  doneCount.textContent = done;
+  totalCount.textContent = total;
 }
 
-// Filtering
-function filter(type) {
-    document.querySelectorAll("#myUL li").forEach(li => {
-        if (type === "all") li.style.display = "flex";
-        else if (type === "completed") li.style.display = li.classList.contains("checked") ? "flex" : "none";
-        else if (type === "pending") li.style.display = !li.classList.contains("checked") ? "flex" : "none";
-    });
+// CRUD
+function addTodo(text, priority){
+  const item = { id: uid(), text, checked:false, priority: priority||'low', time: new Date().toLocaleString() };
+  todos.unshift(item); // newest on top
+  saveTodos();
 }
 
-// Save to localStorage
-function saveTodos() {
-    const data = [];
-    document.querySelectorAll("#myUL li").forEach(li => {
-        data.push({
-            text: li.querySelector("span").textContent,
-            checked: li.classList.contains("checked"),
-            priority: li.classList.contains("high") ? "high" :
-                      li.classList.contains("medium") ? "medium" :
-                      "low",
-            time: li.querySelector(".ts").textContent
-        });
-    });
-    localStorage.setItem("todos_v2", JSON.stringify(data));
+function removeTodo(id){
+  todos = todos.filter(t=>t.id !== id);
+  saveTodos();
 }
 
-// Load from localStorage
-function loadTodos() {
-    const data = JSON.parse(localStorage.getItem("todos_v2") || "[]");
-    const ul = document.getElementById("myUL");
-    ul.innerHTML = "";
-    data.forEach(item => {
-        ul.appendChild(createTodoItem(item.text, item.checked, item.priority, item.time));
-    });
+function toggleChecked(id){
+  todos = todos.map(t => t.id===id ? {...t, checked: !t.checked} : t);
+  saveTodos();
+}
+
+function updateTodoText(id, newText){
+  todos = todos.map(t => t.id===id ? {...t, text:newText} : t);
+  saveTodos();
+}
+
+function clearDone(){
+  if(!confirm('Remove all completed tasks?')) return;
+  todos = todos.filter(t=>!t.checked);
+  saveTodos();
+}
+
+function clearAll(){
+  if(!confirm('Clear all tasks?')) return;
+  todos = [];
+  saveTodos();
+}
+
+// reorder: move draggedId to position of targetId
+function reorder(dragId, targetId){
+  const fromIndex = todos.findIndex(t=>t.id===dragId);
+  const toIndex = todos.findIndex(t=>t.id===targetId);
+  if(fromIndex<0 || toIndex<0) return;
+  const [moved] = todos.splice(fromIndex,1);
+  todos.splice(toIndex,0,moved);
+  saveTodos();
+}
+
+// search filter
+function doSearch(q){
+  const lower = q.trim().toLowerCase();
+  Array.from(ul.children).forEach(li=>{
+    const txt = li.querySelector('.txt').textContent.toLowerCase();
+    li.style.display = txt.includes(lower) ? '' : 'none';
+  });
+}
+
+// theme
+function loadTheme(){
+  const t = localStorage.getItem('pro_theme') || 'light';
+  if(t==='dark') document.body.classList.add('dark');
+  darkToggle.textContent = t==='dark' ? '☀️' : '🌙';
+}
+function toggleTheme(){
+  document.body.classList.toggle('dark');
+  const isDark = document.body.classList.contains('dark');
+  localStorage.setItem('pro_theme', isDark? 'dark':'light');
+  darkToggle.textContent = isDark ? '☀️' : '🌙';
+}
+
+// binding
+function bindEvents(){
+  addBtn.addEventListener('click', ()=>{
+    const txt = input.value.trim();
+    if(!txt) return input.focus();
+    addTodo(txt, prioSel.value);
+    input.value = '';
+    input.focus();
+  });
+
+  input.addEventListener('keypress', (e)=>{ if(e.key==='Enter') addBtn.click(); });
+
+  document.getElementById('clearDone').addEventListener('click', clearDone);
+  document.getElementById('clearAll').addEventListener('click', clearAll);
+
+  searchBox.addEventListener('input', (e)=> doSearch(e.target.value) );
+
+  darkToggle.addEventListener('click', toggleTheme);
+
+  // enable dropping between items (allow dropping on list)
+  ul.addEventListener('dragover',(e)=> e.preventDefault());
+  ul.addEventListener('drop', (e)=>{
+    // if dropped on empty area, move dragged to end
+    if(!dragSrcId) return;
+    const listIds = todos.map(t=>t.id);
+    // if null target place to last position
+    const fromIndex = listIds.indexOf(dragSrcId);
+    if(fromIndex>=0){
+      const [moved] = todos.splice(fromIndex,1);
+      todos.push(moved);
+      saveTodos();
+    }
+  });
+
+  // keyboard accessibility: focus search on /
+  window.addEventListener('keydown', (e)=>{
+    if(e.key === '/') { e.preventDefault(); searchBox.focus(); }
+  });
 }
