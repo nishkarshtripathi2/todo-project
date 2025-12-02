@@ -7,20 +7,19 @@
 
 <body>
 
-    <div class="box">
-        <h2>Advanced Todo List</h2>
+    <div class="container">
+        <h1 class="title">📝 Advanced Todo List</h1>
 
-        <!-- Input -->
-        <input type="text" id="myInput" placeholder="Write your task...">
-
-        <!-- Buttons Row -->
-        <div class="btnRow">
-            <button onclick="newElement()">Add</button>
-            <button onclick="clearDone()">Clear Completed</button>
-            <button onclick="removeAll()">Clear All</button>
+        <div class="inputBox">
+            <input type="text" id="myInput" placeholder="Write your task..." autocomplete="off">
+            <button class="addBtn" onclick="newElement()">+</button>
         </div>
 
-        <!-- Filters -->
+        <div class="controls">
+            <button onclick="clearDone()">✔ Clear Completed</button>
+            <button onclick="removeAll()">🗑 Clear All</button>
+        </div>
+
         <div class="filters">
             <button onclick="filter('all')">All</button>
             <button onclick="filter('pending')">Pending</button>
@@ -33,7 +32,6 @@
             </select>
         </div>
 
-        <!-- Todo List -->
         <ul id="myUL"></ul>
     </div>
 
