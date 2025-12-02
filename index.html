@@ -1,28 +1,42 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Todo List</title>
-
+    <title>Advanced Todo App</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+
     <div class="box">
-        <h2>Todo List</h2>
+        <h2>Advanced Todo List</h2>
 
-        <input type="text" id="myInput" placeholder="Write task here...">
+        <!-- Input -->
+        <input type="text" id="myInput" placeholder="Write your task...">
 
-        <button id="addBtn" onclick="newElement()">Add Todo</button>
+        <!-- Buttons Row -->
+        <div class="btnRow">
+            <button onclick="newElement()">Add</button>
+            <button onclick="clearDone()">Clear Completed</button>
+            <button onclick="removeAll()">Clear All</button>
+        </div>
 
-        <ul id="myUL">
-            <li onclick="toggleCheck(this)">Go and Check Contact List <span class="close" onclick="removeItem(event)">×</span></li>
-            <li onclick="toggleCheck(this)">Learn Data Structure <span class="close" onclick="removeItem(event)">×</span></li>
-            <li onclick="toggleCheck(this)">Prepare Interview Questions <span class="close" onclick="removeItem(event)">×</span></li>
-        </ul>
+        <!-- Filters -->
+        <div class="filters">
+            <button onclick="filter('all')">All</button>
+            <button onclick="filter('pending')">Pending</button>
+            <button onclick="filter('completed')">Completed</button>
 
-        <button id="clearAll" onclick="removeAll()">Clear All</button>
+            <select id="prioSelect">
+                <option value="low">Priority: Low</option>
+                <option value="medium">Priority: Medium</option>
+                <option value="high">Priority: High</option>
+            </select>
+        </div>
+
+        <!-- Todo List -->
+        <ul id="myUL"></ul>
     </div>
 
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
